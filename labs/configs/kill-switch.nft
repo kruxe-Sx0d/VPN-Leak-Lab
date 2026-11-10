@@ -1,0 +1,55 @@
+#!/usr/sbin/nft -f
+# kill-switch.nft — TEMPLATE nftables kill switch (Lab 07).
+#
+# READ THE LAB FIRST: docs/07-practical-labs/lab-07-kill-switch.md
+# Applying firewall rules can cut your network access. Adapt the defines below,
+# apply on a VM you control, and know how to remove it (`nft delete table inet
+# killswitch`) before you start.
+#
+# Goal: when the tunnel is down, drop everything leaving the physical interface
+# EXCEPT the tunnel's own encapsulated traffic to the VPN server (so it can
+# reconnect). Covers IPv4 AND IPv6 via the `inet` family.
+#
+# Apply:   sudo nft -f kill-switch.nft
+# Inspect: sudo nft list table inet killswitch
+# Remove:  sudo nft delete table inet killswitch
+
+# --- Adapt these to your environment ---
+define PHYS       = "eth0"          # physical interface
+define TUN        = "wg0"           # tunnel interface
+define VPN_SERVER = 192.0.2.20      # WireGuard endpoint (IPv4)
+define VPN_PORT   = 51820           # WireGuard port
+
+table inet killswitch {
+    chain output {
+        # Default-deny: anything not explicitly allowed is dropped.
+        type filter hook output priority 0; policy drop;
+
+        # Always allow loopback (local services, stub resolver, etc.).
+        oifname "lo" accept
+
+        # Allow anything that leaves via the tunnel interface — that's the
+        # protected path, whether the tunnel is up or briefly reconnecting.
+        oifname $TUN accept
+
+        # Allow the tunnel's OWN encapsulated packets to the VPN server so the
+        # handshake / keepalives / reconnect can happen. Narrow: one IP + port.
+        oifname $PHYS ip daddr $VPN_SERVER udp dport $VPN_PORT accept
+        # If your endpoint is IPv6, uncomment and set the address:
+        # oifname $PHYS ip6 daddr 2001:db8:1::20 udp dport $VPN_PORT accept
+
+        # Everything else heading out the physical interface hits the drop
+        # policy. Count it so you can SEE the kill switch working.
+        oifname $PHYS counter comment "dropped non-tunnel egress"
+    }
+}
+
+# NOTES
+# - This deliberately does NOT blanket-allow "established" traffic out the
+#   physical interface: a connection opened before the tunnel dropped must not
+#   keep leaking. The tunnel's own flow is allowed by the narrow rule above.
+# - If your Endpoint is a hostname (not an IP), the client needs DNS to resolve
+#   it before the tunnel is up. Allow a bootstrap resolver explicitly, or use an
+#   IP endpoint as this template does.
+# - DNS to non-tunnel resolvers is dropped here (it's non-tunnel egress), which
+#   closes the DNS-leak-during-gap case from Module 03.

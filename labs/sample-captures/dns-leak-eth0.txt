@@ -1,0 +1,16 @@
+# ILLUSTRATIVE ONLY — synthetic example, not a real capture.
+# Scenario: VPN is UP, but DNS still goes to the ISP resolver out eth0 (a leak).
+# Command that would produce this shape:
+#   sudo tcpdump -ni eth0 'udp port 53'
+# Addresses are RFC 5737 documentation ranges. Your output WILL differ.
+
+12:01:02.101234 IP 192.0.2.10.52314 > 192.0.2.53.53: 4242+ A? example.com. (29)
+12:01:02.113456 IP 192.0.2.53.53 > 192.0.2.10.52314: 4242 1/0/0 A 203.0.113.80 (45)
+12:01:05.201111 IP 192.0.2.10.52315 > 192.0.2.53.53: 4243+ AAAA? example.com. (29)
+12:01:05.213222 IP 192.0.2.53.53 > 192.0.2.10.52315: 4243 1/0/0 AAAA 2001:db8::80 (57)
+
+# Reading it:
+# - The client (192.0.2.10) asks the ISP resolver (192.0.2.53) in PLAINTEXT.
+# - These packets appear on eth0, the PHYSICAL interface, while the VPN is up.
+# - That is a DNS path leak: the ISP can see every domain queried.
+# - Compare with tunneled-eth0.txt, where no such port-53 traffic appears.

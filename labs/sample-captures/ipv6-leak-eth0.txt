@@ -1,0 +1,19 @@
+# ILLUSTRATIVE ONLY — synthetic example, not a real capture.
+# Scenario: VPN tunnels IPv4 only. The host is dual-stack, so IPv6 traffic goes
+# out eth0 with the host's REAL global IPv6 address, bypassing the tunnel.
+# Command that would produce this shape:
+#   sudo tcpdump -ni eth0 'ip6 and not icmp6'
+# Addresses are RFC 3849 documentation ranges. Your output WILL differ.
+
+12:05:20.101111 IP6 2001:db8:1::10.47122 > 2001:db8:99::80.443: Flags [S], seq 100, win 64800, length 0
+12:05:20.122222 IP6 2001:db8:99::80.443 > 2001:db8:1::10.47122: Flags [S.], seq 500, ack 101, win 65160, length 0
+12:05:20.123333 IP6 2001:db8:1::10.47122 > 2001:db8:99::80.443: Flags [.], ack 501, win 507, length 0
+12:05:20.130444 IP6 2001:db8:1::10.47122 > 2001:db8:99::80.443: Flags [P.], seq 1:518, ack 501, length 517
+
+# Reading it:
+# - The source is the host's real global IPv6 (2001:db8:1::10), NOT a tunnel
+#   address. These packets leave eth0 directly.
+# - A full TCP handshake + data to a public IPv6 destination happens OUTSIDE the
+#   tunnel, even though the IPv4 VPN is up.
+# - The destination sees the real IPv6 address -> IPv6 leak.
+# - Fix: tunnel IPv6 too (AllowedIPs ::/0) or block IPv6 outside the tunnel.

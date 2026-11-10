@@ -1,0 +1,20 @@
+# ILLUSTRATIVE ONLY — synthetic example, not a real capture.
+# Scenario: VPN is UP and working as a full tunnel. Only the encapsulated
+# WireGuard stream appears on the physical interface — no readable DNS/HTTP.
+# Command that would produce this shape:
+#   sudo tcpdump -ni eth0
+# Addresses are RFC 5737 documentation ranges. Your output WILL differ.
+
+12:03:10.001111 IP 192.0.2.10.51820 > 192.0.2.20.51820: UDP, length 148
+12:03:10.013222 IP 192.0.2.20.51820 > 192.0.2.10.51820: UDP, length 132
+12:03:10.220333 IP 192.0.2.10.51820 > 192.0.2.20.51820: UDP, length 148
+12:03:10.233444 IP 192.0.2.20.51820 > 192.0.2.10.51820: UDP, length 96
+12:03:11.050555 IP 192.0.2.10.51820 > 192.0.2.20.51820: UDP, length 148
+
+# Reading it:
+# - Everything is UDP between the client (192.0.2.10) and the VPN server
+#   (192.0.2.20) on port 51820.
+# - There is NO plaintext DNS (port 53) and NO direct TCP to public sites.
+# - The payloads are opaque ciphertext (add -X to see there's nothing to decode).
+# - This is what "traffic stayed inside the tunnel" looks like on eth0.
+# - Compare with dns-leak-eth0.txt, where readable queries escape.
