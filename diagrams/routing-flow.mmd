@@ -1,0 +1,16 @@
+flowchart TD
+    P["Outgoing packet<br/>destination = 203.0.113.10"] --> R["Kernel consults routing table<br/>(longest prefix match)"]
+    R --> Q{"Which route matches?"}
+    Q -->|"0.0.0.0/0 via wg0"| T["Send into tunnel interface<br/>-> encapsulated to VPN server"]
+    Q -->|"0.0.0.0/0 via eth0"| L["Send out physical interface<br/>-> REAL source IP visible (leak)"]
+    Q -->|"specific /24 via eth0"| S["Split-tunnel route<br/>-> bypasses VPN by design"]
+
+    T --> OK["Protected path"]
+    L --> BAD["Leak path"]
+    S --> NOTE["Intentional bypass:<br/>verify it is what you want"]
+
+    style T fill:#2d333b,stroke:#57ab5a,color:#e6edf3
+    style OK fill:#2d333b,stroke:#57ab5a,color:#e6edf3
+    style L fill:#2d333b,stroke:#e5534b,color:#e6edf3
+    style BAD fill:#2d333b,stroke:#e5534b,color:#e6edf3
+    style S fill:#2d333b,stroke:#539bf5,color:#e6edf3

@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant B as Browser (WebRTC)
+    participant STUN as STUN server
+    participant P as Remote peer
+
+    Note over B: App calls getUserMedia / RTCPeerConnection<br/>and gathers ICE candidates
+    B->>STUN: STUN Binding Request (via default route)
+    STUN-->>B: "Your reflexive address is 192.0.2.10"
+    Note over B: Browser now knows a public candidate.<br/>If this used the physical route, it is your REAL IP.
+    B->>P: SDP offer listing candidate IPs
+    Note over P: Peer can see the candidate addresses,<br/>which may include the non-tunneled IP
+    Note over B,P: Modern browsers may hide local IPs behind<br/>mDNS (.local) candidates; behavior varies by<br/>browser, version, and settings.

@@ -1,0 +1,27 @@
+flowchart TD
+    IP["Incoming client IP<br/>(the VPN exit address)"] --> ASN["Look up ASN + IP range owner"]
+    ASN --> DC{"Datacenter / hosting range?"}
+    DC -->|yes| SCORE1["Add 'likely VPN/proxy' signal"]
+    DC -->|no| RES["Residential / mobile ISP"]
+
+    IP --> REP["Check IP reputation feeds<br/>(known VPN exit lists, abuse history)"]
+    REP --> SCORE2["Add reputation signal"]
+
+    IP --> GEO["GeoIP lookup"]
+    GEO --> MISMATCH{"Location inconsistent<br/>with account / billing?"}
+    MISMATCH -->|yes| SCORE3["Add anomaly signal"]
+
+    SCORE1 --> RISK["Aggregate risk score"]
+    SCORE2 --> RISK
+    SCORE3 --> RISK
+    RES --> RISK
+    RISK --> DECIDE{"Threshold?"}
+    DECIDE -->|high| CHALLENGE["Challenge / block / rate-limit"]
+    DECIDE -->|low| ALLOW["Allow"]
+
+    NOTE["False positives are common:<br/>datacenter != malicious, and many<br/>legitimate users share VPN exits."]
+    RISK -.-> NOTE
+
+    style CHALLENGE fill:#2d333b,stroke:#e5534b,color:#e6edf3
+    style ALLOW fill:#2d333b,stroke:#57ab5a,color:#e6edf3
+    style NOTE fill:#22272e,stroke:#539bf5,color:#e6edf3

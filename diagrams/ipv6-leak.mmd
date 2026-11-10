@@ -1,0 +1,13 @@
+flowchart TD
+    APP["App connects to example.com<br/>(has A and AAAA records)"] --> PREF["OS address selection<br/>(RFC 6724): often prefers IPv6"]
+    PREF --> V6{"IPv6 route present?"}
+    V6 -->|"yes, via eth0<br/>(VPN only tunnels IPv4)"| LEAK["IPv6 connection goes out eth0<br/>with your REAL IPv6 address"]
+    V6 -->|"IPv6 also routed into tunnel"| SAFE["IPv6 goes through wg0<br/>(protected)"]
+    V6 -->|"no IPv6 route"| V4["Falls back to IPv4 -> tunnel"]
+
+    LEAK --> OBS["Server / observer sees your<br/>real IPv6, bypassing the VPN"]
+
+    style LEAK fill:#2d333b,stroke:#e5534b,color:#e6edf3
+    style OBS fill:#2d333b,stroke:#e5534b,color:#e6edf3
+    style SAFE fill:#2d333b,stroke:#57ab5a,color:#e6edf3
+    style V4 fill:#2d333b,stroke:#57ab5a,color:#e6edf3

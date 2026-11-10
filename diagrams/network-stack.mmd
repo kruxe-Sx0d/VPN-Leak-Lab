@@ -1,0 +1,21 @@
+flowchart TB
+    subgraph APP["Application layer"]
+        A["HTTP / DNS / WebRTC payload"]
+    end
+    subgraph TRANSPORT["Transport layer"]
+        B["TCP or UDP segment<br/>(ports, sequencing)"]
+    end
+    subgraph INTERNET["Internet layer"]
+        C["IP packet<br/>(source + destination IP)"]
+    end
+    subgraph LINK["Link layer"]
+        D["Frame<br/>(MAC, sent on an interface)"]
+    end
+
+    A --> B --> C --> D
+
+    VPN["VPN operates here:<br/>it takes the whole IP packet (C),<br/>encrypts it, and wraps it in a NEW<br/>outer IP/UDP packet before it hits D."]
+    C -.-> VPN
+
+    style VPN fill:#2d333b,stroke:#57ab5a,color:#e6edf3
+    style C fill:#2d333b,stroke:#539bf5,color:#e6edf3

@@ -1,0 +1,21 @@
+flowchart TB
+    subgraph ORIGINAL["Original (inner) packet — what the app sent"]
+        IP1["Inner IP header<br/>src 10.8.0.2 -> dst 203.0.113.10"]
+        PAY["TCP/UDP + payload (e.g. HTTPS)"]
+        IP1 --- PAY
+    end
+
+    ORIGINAL --> WRAP["VPN encrypts the inner packet,<br/>then adds new outer headers"]
+
+    subgraph WIRE["What actually travels on the physical link"]
+        IP2["Outer IP header<br/>src 192.0.2.10 -> dst VPN_SERVER"]
+        UDP["Outer UDP header<br/>dport 51820"]
+        CIPHER["Encrypted inner packet<br/>(opaque ciphertext)"]
+        IP2 --- UDP --- CIPHER
+    end
+
+    WRAP --> WIRE
+
+    style ORIGINAL fill:#22272e,stroke:#539bf5,color:#e6edf3
+    style WIRE fill:#22272e,stroke:#57ab5a,color:#e6edf3
+    style CIPHER fill:#2d333b,stroke:#57ab5a,color:#e6edf3

@@ -1,0 +1,40 @@
+# --- Secrets: never commit real keys or credentials ---
+*.key
+*.pem
+*.p12
+*.pfx
+privatekey*
+*private*key*
+.env
+.env.*
+credentials*
+*.ovpn.real
+
+# --- Personal / real packet captures ---
+# The synthetic, clearly-labeled examples under labs/sample-captures/ ARE
+# committed on purpose. Anything captured from a real network stays local.
+*.pcap
+*.pcapng
+*.cap
+# ...except the curated illustrative samples shipped with the labs:
+!labs/sample-captures/**
+
+# --- Generated lab state ---
+labs/**/wg0.conf.generated
+labs/**/runtime/
+*.log
+
+# --- Editors & OS ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# --- Python ---
+__pycache__/
+*.pyc
+.venv/
+venv/

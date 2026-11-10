@@ -1,0 +1,18 @@
+flowchart LR
+    U["Your traffic"] --> C["Malicious / careless VPN client"]
+    C --> S["Provider's server"]
+
+    S --> LOG["Log + retain metadata<br/>(who, when, where)"]
+    S --> DNS["DNS manipulation<br/>(redirect / block / inject)"]
+    S --> HTTP["Tamper with unencrypted HTTP<br/>(inject, rewrite)"]
+    S --> EXFIL["Exfiltrate collected data<br/>to third parties"]
+    S --> FWD["Forward traffic to Internet"]
+
+    C -.->|"abuses installed root cert<br/>(if user trusted it)"| TLS["Attempt TLS interception<br/>of HTTPS"]
+
+    style LOG fill:#2d333b,stroke:#e5534b,color:#e6edf3
+    style DNS fill:#2d333b,stroke:#e5534b,color:#e6edf3
+    style HTTP fill:#2d333b,stroke:#e5534b,color:#e6edf3
+    style EXFIL fill:#2d333b,stroke:#e5534b,color:#e6edf3
+    style TLS fill:#2d333b,stroke:#e5534b,color:#e6edf3
+    style FWD fill:#2d333b,stroke:#57ab5a,color:#e6edf3

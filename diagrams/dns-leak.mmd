@@ -1,0 +1,14 @@
+sequenceDiagram
+    participant App as Browser / app
+    participant OS as OS stub resolver
+    participant ISP as ISP resolver (outside tunnel)
+    participant VPN as VPN DNS resolver (inside tunnel)
+
+    Note over App,OS: VPN is connected, but DNS is still<br/>pointed at the ISP resolver (or leaks via split DNS)
+    App->>OS: resolve example.com
+    OS--xVPN: query NOT sent into tunnel
+    OS->>ISP: DNS query for example.com (plaintext UDP 53)
+    Note over ISP: ISP sees the domain you asked for,<br/>even though the web traffic is tunneled
+    ISP-->>OS: answer (real IP)
+    OS-->>App: answer
+    App->>App: opens HTTPS to example.com through the tunnel

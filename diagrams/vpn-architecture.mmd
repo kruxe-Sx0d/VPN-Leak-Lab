@@ -1,0 +1,17 @@
+flowchart LR
+    subgraph CLIENT["Your machine"]
+        APP["Applications"] --> TUN["Virtual interface<br/>wg0 / tun0<br/>10.8.0.2"]
+        TUN --> ENC["VPN client:<br/>encrypt + encapsulate"]
+        ENC --> PHY["Physical interface<br/>eth0<br/>192.0.2.10"]
+    end
+
+    PHY -->|"outer packet:<br/>src 192.0.2.10 -> VPN server<br/>UDP 51820 (WireGuard)"| SRV
+
+    subgraph SERVER["VPN server"]
+        SRV["Decrypt + decapsulate"] --> FWD["Forward original packet"]
+    end
+    FWD --> NET["Internet<br/>sees VPN server IP,<br/>not 192.0.2.10"]
+
+    style TUN fill:#2d333b,stroke:#57ab5a,color:#e6edf3
+    style ENC fill:#2d333b,stroke:#57ab5a,color:#e6edf3
+    style NET fill:#2d333b,stroke:#539bf5,color:#e6edf3

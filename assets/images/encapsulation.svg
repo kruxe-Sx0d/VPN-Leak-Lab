@@ -1,0 +1,47 @@
+<svg width="900" height="360" viewBox="0 0 900 360" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VPN packet encapsulation: an inner IP packet wrapped in an outer IP/UDP packet">
+  <rect width="900" height="360" fill="#1c2128"/>
+  <g font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif">
+    <text x="40" y="46" font-size="22" font-weight="700" fill="#e6edf3">What actually travels on the wire</text>
+    <text x="40" y="72" font-size="14" fill="#9aa4b2">The original packet is encrypted, then wrapped in new outer headers.</text>
+  </g>
+
+  <!-- outer packet container -->
+  <g font-family="'SFMono-Regular', Consolas, 'Liberation Mono', monospace">
+    <rect x="40" y="100" width="820" height="150" rx="10" fill="#22272e" stroke="#57ab5a" stroke-width="2"/>
+    <text x="56" y="126" font-size="13" fill="#57ab5a">OUTER PACKET (visible on the physical link)</text>
+
+    <!-- outer IP header -->
+    <rect x="56" y="140" width="200" height="90" rx="6" fill="#2d333b" stroke="#539bf5" stroke-width="1.5"/>
+    <text x="156" y="166" text-anchor="middle" font-size="13" fill="#539bf5">Outer IP header</text>
+    <text x="156" y="190" text-anchor="middle" font-size="11" fill="#adbac7">src 192.0.2.10</text>
+    <text x="156" y="208" text-anchor="middle" font-size="11" fill="#adbac7">dst VPN_SERVER</text>
+
+    <!-- outer UDP header -->
+    <rect x="268" y="140" width="150" height="90" rx="6" fill="#2d333b" stroke="#539bf5" stroke-width="1.5"/>
+    <text x="343" y="166" text-anchor="middle" font-size="13" fill="#539bf5">Outer UDP</text>
+    <text x="343" y="190" text-anchor="middle" font-size="11" fill="#adbac7">dport 51820</text>
+    <text x="343" y="208" text-anchor="middle" font-size="11" fill="#adbac7">(WireGuard)</text>
+
+    <!-- encrypted inner packet -->
+    <rect x="430" y="140" width="414" height="90" rx="6" fill="#2d333b" stroke="#57ab5a" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="637" y="166" text-anchor="middle" font-size="13" fill="#57ab5a">Encrypted inner packet (ciphertext)</text>
+    <text x="637" y="190" text-anchor="middle" font-size="11" fill="#6e7a8a">opaque to anyone on the path</text>
+    <text x="637" y="208" text-anchor="middle" font-size="11" fill="#6e7a8a">contains the original packet below</text>
+  </g>
+
+  <!-- arrow down to decrypted view -->
+  <path d="M450 250 v28" stroke="#6e7a8a" stroke-width="2"/>
+  <path d="M450 278 l-6 -9 h12 z" fill="#6e7a8a"/>
+  <text x="470" y="272" font-size="12" fill="#9aa4b2" font-family="'Segoe UI', Arial, sans-serif">decrypted at the VPN server</text>
+
+  <!-- inner packet -->
+  <g font-family="'SFMono-Regular', Consolas, 'Liberation Mono', monospace">
+    <rect x="180" y="288" width="540" height="52" rx="8" fill="#22272e" stroke="#539bf5" stroke-width="1.5"/>
+    <rect x="192" y="298" width="236" height="32" rx="5" fill="#2d333b" stroke="#444c56"/>
+    <text x="310" y="319" text-anchor="middle" font-size="11" fill="#adbac7">Inner IP: 10.8.0.2 -&gt; 203.0.113.10</text>
+    <rect x="438" y="298" width="100" height="32" rx="5" fill="#2d333b" stroke="#444c56"/>
+    <text x="488" y="319" text-anchor="middle" font-size="11" fill="#adbac7">TCP / UDP</text>
+    <rect x="548" y="298" width="160" height="32" rx="5" fill="#2d333b" stroke="#444c56"/>
+    <text x="628" y="319" text-anchor="middle" font-size="11" fill="#adbac7">payload (e.g. HTTPS)</text>
+  </g>
+</svg>
